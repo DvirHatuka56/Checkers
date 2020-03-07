@@ -59,9 +59,6 @@ namespace Checkers
                 case State.Source:
                     Background = new SolidColorBrush(Colors.Cyan);
                     break;
-                case State.Destination:
-                    Background = new SolidColorBrush(Colors.Cyan);
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }

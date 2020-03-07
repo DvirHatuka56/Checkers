@@ -1,6 +1,9 @@
-﻿namespace Checkers
+﻿using System;
+using System.Windows.Documents;
+
+namespace Checkers
 {
-    struct SourceData
+    internal struct SourceData
     {
         public State State { get; set; }
         public int Row { get; set; }
@@ -12,13 +15,13 @@
         private State[,] States { get; }
         private bool sourceMarked;
         private SourceData sourceData;
-        private bool destinationMarked;
+        public bool BlackTurn { get; private set; }
 
         public Board()
         {
             sourceMarked = false;
             sourceData = new SourceData();
-            destinationMarked = false;
+            BlackTurn = true;
             States = new State[8,8];
 
             for (int i = 0; i < States.GetLength(0); i++)
@@ -50,7 +53,7 @@
 
         private void OnSquareClicked(int row, int column)
         {
-            if (!destinationMarked && CheckValidSource(row, column))
+            if (CheckValidSource(row, column))
             {
                 if (sourceMarked)
                 {
@@ -67,21 +70,64 @@
                 return;
             }
 
-            if (!CheckValidDestination(row, column)) return;
+            Move move = CheckValidDestination(row, column);
+            if (!sourceMarked || move == Move.Invalid) return;
+            if (move == Move.Consume)
+            {
+                int middleRow = (sourceData.Row + row) / 2, middleColumn = (sourceData.Column + column) / 2;
+                States[middleRow, middleColumn] = State.Black;
+            }
             States[sourceData.Row, sourceData.Column] = State.Black;
             States[row, column] = sourceData.State;
             sourceMarked = false;
-            destinationMarked = false;
+            BlackTurn = !BlackTurn;
         }
 
         private bool CheckValidSource(int row, int column)
         {
-            return States[row, column] == State.BlackPlayer || States[row, column] == State.WhitePlayer;
+            return IsBlack(row, column) || IsWhite(row, column);
         }
 
-        private bool CheckValidDestination(int row, int column)
+        private Move CheckValidDestination(int row, int column)
         {
-            return States[row, column] == State.Black;
+            bool simpleMove = States[row, column] == State.Black &&
+                              CheckSimpleMove(row, column);
+            bool consume = States[row, column] == State.Black &&
+                           CheckConsume(row, column);
+            
+            if (consume)
+            {
+                return Move.Consume;
+            }
+            
+            return simpleMove ? Move.Simple : Move.Invalid;
+        }
+
+        public bool IsWhite(int row, int column)
+        {
+            return States[row, column] == State.WhitePlayer || States[row, column] == State.WhiteQueen;
+        }
+        
+        public bool IsBlack(int row, int column)
+        {
+            return States[row, column] == State.BlackPlayer || States[row, column] == State.BlackQueen;
+        }
+
+        private bool CheckConsume(int row, int column)
+        {
+            bool black = sourceData.State == State.BlackPlayer || sourceData.State == State.BlackQueen;
+            int direction = black ? 1 : -1;
+            int middleRow = (sourceData.Row + row) / 2, middleColumn = (sourceData.Column + column) / 2;
+            return (row - sourceData.Row) * direction == 2 && Math.Abs(column - sourceData.Column) == 2 &&
+                (black && IsWhite(middleRow, middleColumn) ||
+                 !black && IsBlack(middleRow, middleColumn));
+        }
+
+        private bool CheckSimpleMove(int row, int column)
+        {
+            bool black = sourceData.State == State.BlackPlayer || sourceData.State == State.BlackQueen;
+            int direction = black ? 1 : -1;
+            return (row - sourceData.Row) * direction == 1 && Math.Abs(column - sourceData.Column) == 1;
         }
     }
 }

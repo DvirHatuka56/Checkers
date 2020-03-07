@@ -46,6 +46,9 @@ namespace Checkers
             {
                 for (int j = 0; j < Squares.GetLength(1); j++)
                 {
+                    Squares[i, j].IsEnabled = Board.IsBlack(i, j) && Board.BlackTurn ||
+                                              Board.IsWhite(i, j) && !Board.BlackTurn ||
+                                              Board[i, j] == State.Black;
                     Squares[i, j].Update(Board[i, j]);
                 }
             }

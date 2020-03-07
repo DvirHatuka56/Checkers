@@ -8,7 +8,6 @@
         WhitePlayer,
         BlackQueen,
         WhiteQueen,
-        Source,
-        Destination
+        Source
     }
 }
