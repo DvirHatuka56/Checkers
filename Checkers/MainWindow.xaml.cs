@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Checkers
@@ -19,6 +20,7 @@ namespace Checkers
             InitializeComponent();
             Squares = new Square[8, 8];
             Board = new Board();
+            Board.OnWin += BoardOnOnWin;
             for (int i = 0; i < Squares.GetLength(0); i++)
             {
                 for (int j = 0; j < Squares.GetLength(1); j++)
@@ -28,9 +30,19 @@ namespace Checkers
                     Grid.SetRow(Squares[i, j], i + 1); 
                     Grid.SetColumn(Squares[i, j], j + 1);
                     BoardGrid.Children.Add(Squares[i, j]);
+                    Squares[i, j].IsEnabled = Board.IsBlack(i, j) && Board.BlackTurn ||
+                                              Board.IsWhite(i, j) && !Board.BlackTurn ||
+                                              Board[i, j] == State.Black;
                     Squares[i, j].Update(Board[i, j]);
                 }
             }
+        }
+
+        private void BoardOnOnWin(Win winner)
+        {
+            MessageBox.Show($"{(winner == Win.Black ? "Black" : "White")} player WON!!!");
+            Close();
+            Application.Current.Shutdown();
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)

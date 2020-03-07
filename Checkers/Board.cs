@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Windows.Documents;
 
 namespace Checkers
 {
+    public delegate void Winning(Win winner);
+    
     internal struct SourceData
     {
         public State State { get; set; }
@@ -15,6 +16,7 @@ namespace Checkers
         private State[,] States { get; }
         private bool sourceMarked;
         private SourceData sourceData;
+        public static event Winning OnWin;
         public bool BlackTurn { get; private set; }
 
         public Board()
@@ -81,6 +83,11 @@ namespace Checkers
             States[row, column] = sourceData.State;
             sourceMarked = false;
             BlackTurn = !BlackTurn;
+            Win win = CheckWin();
+            if (win != Win.None)
+            {
+                OnWin?.Invoke(win);
+            }
         }
 
         private bool CheckValidSource(int row, int column)
@@ -128,6 +135,28 @@ namespace Checkers
             bool black = sourceData.State == State.BlackPlayer || sourceData.State == State.BlackQueen;
             int direction = black ? 1 : -1;
             return (row - sourceData.Row) * direction == 1 && Math.Abs(column - sourceData.Column) == 1;
+        }
+
+        private Win CheckWin()
+        {
+            int black = 0, white = 0;
+            foreach (State state in States)
+            {
+                black = state == State.BlackPlayer || state == State.BlackQueen ? black + 1 : black;
+                white = state == State.WhitePlayer || state == State.WhiteQueen ? white + 1 : white;
+            }
+
+            if (black == 0)
+            {
+                return Win.White;
+            }
+
+            if (white == 0)
+            {
+                return Win.Black;
+            }
+
+            return Win.None;
         }
     }
 }
