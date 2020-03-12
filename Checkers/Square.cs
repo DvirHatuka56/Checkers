@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace Checkers
@@ -19,6 +20,7 @@ namespace Checkers
         public void Update(State state)
         {
             Background = new SolidColorBrush(Colors.Black);
+            BitmapImage image = new BitmapImage();
             switch (state)
             {
                 case State.Black:
@@ -29,16 +31,22 @@ namespace Checkers
                     Content = null;
                     break;
                 case State.BlackPlayer:
-                    Content = new Ellipse
+                    image.BeginInit();
+                    image.UriSource = new Uri("Images/BlackPlayer.png", UriKind.Relative);
+                    image.EndInit();
+                    Content = new Image
                     {
-                        Fill = new SolidColorBrush(Colors.DimGray),
+                        Source = image,
                         Stretch = Stretch.UniformToFill
                     };
                     break;
                 case State.WhitePlayer:
-                    Content = new Ellipse
+                    image.BeginInit();
+                    image.UriSource = new Uri("Images/WhitePlayer.png", UriKind.Relative);
+                    image.EndInit();
+                    Content = new Image
                     {
-                        Fill = new SolidColorBrush(Colors.Wheat),
+                        Source = image,
                         Stretch = Stretch.UniformToFill
                     };
                     break;

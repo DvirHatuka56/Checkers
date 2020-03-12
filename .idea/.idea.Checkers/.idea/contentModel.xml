@@ -11,6 +11,10 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="Board.cs" t="Include" />
         <e p="Checkers.csproj" t="IncludeRecursive" />
+        <e p="Images" t="Include">
+          <e p="BlackPlayer.png" t="Include" />
+          <e p="WhitePlayer.png" t="Include" />
+        </e>
         <e p="MainWindow.xaml" t="Include" />
         <e p="MainWindow.xaml.cs" t="Include" />
         <e p="Move.cs" t="Include" />
